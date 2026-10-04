@@ -1,6 +1,6 @@
 <?php
 
-class FootballMatch
+class BasketballMatch
 {
     private ?int $id = null;
     private int $teamScore = 0;
