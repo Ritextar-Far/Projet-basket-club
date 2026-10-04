@@ -15,7 +15,17 @@ $clubs = [
 ];
 
 $joueurs = [
-    'LeBron James', 'Stephen Curry', 'Kevin Durant', 'Giannis Antetokounmpo','Kawhi Leonard', 'James Harden', 'Anthony Davis', 'Luka Doncic','Joel Embiid', 'Nikola Jokic'];
+    'James' => 'LeBron',
+    'Curry' => 'Stephen',
+    'Durant' => 'Kevin',
+    'Antetokounmpo' => 'Giannis',
+    'Leonard' => 'Kawhi',
+    'Harden' => 'James',
+    'Davis' => 'Anthony',
+    'Doncic' => 'Luka',
+    'Embiid' => 'Joel',
+    'Jokic' => 'Nikola'
+];
 
 for ($i = 1; $i <= 10; $i++) {
     [$nomEquipe1, $nomEquipe2] = array_rand($clubs, 2);
@@ -28,13 +38,13 @@ for ($i = 1; $i <= 10; $i++) {
     $match->setTeam(new Team(null, $nomEquipe1));
     $match->setOpposingClub(new OpposingClub(null, $nomEquipe2));
 
-    $nomCompletJoueur = $joueurs[array_rand($joueurs)];
-    [$prenomJoueur, $nomJoueur] = array_pad(explode(' ', $nomCompletJoueur, 2), 2, '');
+    $nomJoueur = array_rand($joueurs);
+    $prenomJoueur = $joueurs[$nomJoueur];
     $joueur = new Player(null, $prenomJoueur, $nomJoueur);
 
     echo "Match $i : " . $match->getTeam()->getName() . " vs " . $match->getOpposingClub()->getName() . "<br>";
     echo "Score : " . $match->getTeamScore() . " - " . $match->getOpponentScore() . "<br>";
     echo "Date : " . $match->getDate()->format('Y-m-d') . "<br>";
     echo "City : " . $match->getCity() . "<br>";
-    echo "Joueur : " . $joueur->getFirstName() . ' ' . $joueur->getLastName() . "<br><br>";
+    echo "Joueur : " . $joueur->getFirstName() . ' ' . $joueur->getLastName() . "<br>";
 }
