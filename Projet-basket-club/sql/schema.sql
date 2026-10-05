@@ -1,0 +1,67 @@
+CREATE DATABASE IF NOT EXISTS basket_club
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+USE basket_club;
+
+CREATE TABLE IF NOT EXISTS team (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name VARCHAR(150) NOT NULL DEFAULT '',
+    PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS player (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    first_name VARCHAR(100) NOT NULL DEFAULT '',
+    last_name VARCHAR(100) NOT NULL DEFAULT '',
+    birth_date DATE NOT NULL,
+    picture VARCHAR(255) NOT NULL DEFAULT '',
+    PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS staff (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    first_name VARCHAR(100) NOT NULL DEFAULT '',
+    last_name VARCHAR(100) NOT NULL DEFAULT '',
+    picture VARCHAR(255) NOT NULL DEFAULT '',
+    `role` VARCHAR(100) NOT NULL DEFAULT '',
+    PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS opposing_club (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name VARCHAR(150) NOT NULL DEFAULT '',
+    address VARCHAR(255) NOT NULL DEFAULT '',
+    city VARCHAR(150) NOT NULL DEFAULT '',
+    PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS basketball_match (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    team_score INT UNSIGNED NOT NULL,
+    opponent_score INT UNSIGNED NOT NULL,
+    `date` DATETIME NOT NULL,
+    city VARCHAR(150) NOT NULL DEFAULT '',
+    team_id INT UNSIGNED NOT NULL,
+    opposing_club_id INT UNSIGNED NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_match_team
+        FOREIGN KEY (team_id) REFERENCES team (id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT fk_match_opposing_club
+        FOREIGN KEY (opposing_club_id) REFERENCES opposing_club (id)
+        ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS player_has_team (
+    player_id INT UNSIGNED NOT NULL,
+    team_id INT UNSIGNED NOT NULL,
+    `role` VARCHAR(100) NOT NULL DEFAULT '',
+    PRIMARY KEY (player_id, team_id),
+    CONSTRAINT fk_player_has_team_player
+        FOREIGN KEY (player_id) REFERENCES player (id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_player_has_team_team
+        FOREIGN KEY (team_id) REFERENCES team (id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB;

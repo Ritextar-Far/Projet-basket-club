@@ -1,15 +1,15 @@
 <?php
 
-class StaffMember
+class staff
 {
-    private ?int $id = null;
+    private int $id;
     private string $firstName = '';
     private string $lastName = '';
     private string $picture = '';
     private string $role = '';
 
     public function __construct(
-        ?int $id = null,
+        int $id,
         string $firstName = '',
         string $lastName = '',
         string $picture = '',
@@ -22,8 +22,8 @@ class StaffMember
         $this->role = $role;
     }
 
-    public function getId(): ?int { return $this->id; }
-    public function setId(?int $id): self { $this->id = $id; return $this; }
+    public function getId(): int { return $this->id; }
+    public function setId(int $id): self { $this->id = $id; return $this; }
 
     public function getFirstName(): string { return $this->firstName; }
     public function setFirstName(string $firstName): self { $this->firstName = $firstName; return $this; }
