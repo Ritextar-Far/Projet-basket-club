@@ -11,3 +11,5 @@ foreach ($fichiers as $nom) {
         require_once $chemin;
     }
 }
+
+require_once __DIR__ . '/Repositories/PlayerRepository.php';
