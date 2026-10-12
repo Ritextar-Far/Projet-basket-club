@@ -1,14 +1,16 @@
 <?php
 
-class team
+class Team
 {
     private int $id;
-    private string $name = '';
-
-    public function __construct(int $id, string $name = '')
+    private string $name;
+    private string $logo;
+    
+    public function __construct(int $id, string $name, string $logo)
     {
         $this->id = $id;
         $this->name = $name;
+        $this->logo = $logo;
     }
 
     public function getId(): int { return $this->id; }
@@ -16,4 +18,7 @@ class team
 
     public function getName(): string { return $this->name; }
     public function setName(string $name): self { $this->name = $name; return $this; }
+
+    public function getLogo(): string { return $this->logo; }
+    public function setLogo(string $logo): self { $this->logo = $logo; return $this; }
 }

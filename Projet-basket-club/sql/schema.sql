@@ -7,6 +7,7 @@ USE basket_club;
 CREATE TABLE IF NOT EXISTS team (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(150) NOT NULL DEFAULT '',
+    logo VARCHAR(255) NOT NULL DEFAULT '',
     PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
@@ -24,7 +25,7 @@ CREATE TABLE IF NOT EXISTS staff (
     first_name VARCHAR(100) NOT NULL DEFAULT '',
     last_name VARCHAR(100) NOT NULL DEFAULT '',
     picture VARCHAR(255) NOT NULL DEFAULT '',
-    `role` VARCHAR(100) NOT NULL DEFAULT '',
+    `role` VARCHAR(100) NOT NULL DEFAULT 'Coach',
     PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
@@ -56,7 +57,7 @@ CREATE TABLE IF NOT EXISTS basketball_match (
 CREATE TABLE IF NOT EXISTS player_has_team (
     player_id INT UNSIGNED NOT NULL,
     team_id INT UNSIGNED NOT NULL,
-    `role` VARCHAR(100) NOT NULL DEFAULT '',
+    `role` VARCHAR(100) NOT NULL DEFAULT 'meneur',
     PRIMARY KEY (player_id, team_id),
     CONSTRAINT fk_player_has_team_player
         FOREIGN KEY (player_id) REFERENCES player (id)

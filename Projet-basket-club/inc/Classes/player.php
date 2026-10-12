@@ -1,19 +1,19 @@
 <?php
 
-class player
+class Player
 {
     private int $id;
-    private string $firstName = '';
-    private string $lastName = '';
+    private string $firstName;
+    private string $lastName;
     private DateTime $birthDate;
-    private string $picture = '';
+    private string $picture;
 
     public function __construct(
         int $id,
         string $firstName,
         string $lastName,
         DateTime $birthDate,
-        string $picture = ''
+        string $picture
     ) {
         $this->id = $id;
         $this->firstName = $firstName;

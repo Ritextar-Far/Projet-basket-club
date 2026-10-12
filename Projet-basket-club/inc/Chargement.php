@@ -2,14 +2,19 @@
 
 declare(strict_types=1);
 
-$fichiers = ['BasketballMatch', 'OpposingClub', 'player', 'player_has_team', 'staff', 'team'];
+require_once __DIR__ . '/Enumérations/StaffRole.php';
+require_once __DIR__ . '/Enumérations/PlayerRole.php';
 
-foreach ($fichiers as $nom) {
-    $chemin = __DIR__ . '/Classes/' . $nom . '.php';
-
-    if (is_file($chemin)) {
-        require_once $chemin;
-    }
-}
+require_once __DIR__ . '/Classes/team.php';
+require_once __DIR__ . '/Classes/player.php';
+require_once __DIR__ . '/Classes/staff.php';
+require_once __DIR__ . '/Classes/OpposingClub.php';
+require_once __DIR__ . '/Classes/player_has_team.php';
+require_once __DIR__ . '/Classes/BasketballMatch.php';
 
 require_once __DIR__ . '/Repositories/PlayerRepository.php';
+require_once __DIR__ . '/Repositories/StaffRepository.php';
+require_once __DIR__ . '/Repositories/TeamRepository.php';
+require_once __DIR__ . '/Repositories/BasketballMatchRepository.php';
+require_once __DIR__ . '/Repositories/OpposingClubRepository.php';
+require_once __DIR__ . '/Repositories/PlayerHasTeamRepository.php';

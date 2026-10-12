@@ -1,6 +1,6 @@
 <?php
 
-class staff
+class Staff
 {
     private int $id;
     private string $firstName ;
@@ -34,6 +34,6 @@ class staff
     public function getPicture(): string { return $this->picture; }
     public function setPicture(string $picture): self { $this->picture = $picture; return $this; }
 
-    public function getRole(): string { return $this->role; }
-    public function setRole(string $role): self { $this->role = $role; return $this; }
+    public function getRole(): StaffRole { return $this->role; }
+    public function setRole(StaffRole $role): self { $this->role = $role; return $this; }
 }
