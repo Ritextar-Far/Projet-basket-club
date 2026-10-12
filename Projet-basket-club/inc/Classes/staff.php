@@ -3,17 +3,17 @@
 class staff
 {
     private int $id;
-    private string $firstName = '';
-    private string $lastName = '';
-    private string $picture = '';
-    private string $role = '';
+    private string $firstName ;
+    private string $lastName ;
+    private string $picture ;
+    private StaffRole $role ;
 
     public function __construct(
         int $id,
-        string $firstName = '',
-        string $lastName = '',
-        string $picture = '',
-        string $role = ''
+        string $firstName,
+        string $lastName,
+        string $picture,
+        StaffRole $role,
     ) {
         $this->id = $id;
         $this->firstName = $firstName;

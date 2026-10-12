@@ -1,24 +1,5 @@
 <?php
 
-enum PlayerRole: string
-{
-    case MENEUR = 'meneur';
-    case ARRIERE = 'arriere';
-    case AILIER = 'ailier';
-    case AILIER_FORT = 'ailier_fort';
-    case PIVOT = 'pivot';
-
-    public function label(): string
-    {
-        return match ($this) {
-            self::MENEUR => 'Meneur',
-            self::ARRIERE => 'Arriere',
-            self::AILIER => 'Ailier',
-            self::AILIER_FORT => 'Ailier fort',
-            self::PIVOT => 'Pivot',
-        };
-    }
-}
 
 class PlayerHasTeam
 {
