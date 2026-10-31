@@ -16,7 +16,7 @@ class BasketballMatch
         int $opponentScore,
         DateTime $date,
         string $city,
-        team $team,
+        Team $team,
         OpposingClub $opposingClub
     ) {
         $this->id = $id;
@@ -43,8 +43,8 @@ class BasketballMatch
     public function getCity(): string { return $this->city; }
     public function setCity(string $city): self { $this->city = $city; return $this; }
 
-    public function getTeam(): team { return $this->team; }
-    public function setTeam(team $team): self { $this->team = $team; return $this; }
+    public function getTeam(): Team { return $this->team; }
+    public function setTeam(Team $team): self { $this->team = $team; return $this; }
 
     public function getOpposingClub(): OpposingClub { return $this->opposingClub; }
     public function setOpposingClub(OpposingClub $opposingClub): self { $this->opposingClub = $opposingClub; return $this; }

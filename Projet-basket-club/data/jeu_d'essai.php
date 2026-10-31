@@ -2,16 +2,16 @@
 require_once __DIR__ . '/../inc/Chargement.php';
 
 $clubs = [
-    'Los Angeles Lakers'     => 'Los Angeles',
-    'Golden State Warriors'  => 'San Francisco',
-    'Brooklyn Nets'          => 'New York',
-    'Milwaukee Bucks'        => 'Milwaukee',
-    'Los Angeles Clippers'   => 'Los Angeles',
-    'Houston Rockets'        => 'Houston',
-    'Dallas Mavericks'       => 'Dallas',
-    'Philadelphia 76ers'     => 'Philadelphie',
-    'Denver Nuggets'         => 'Denver',
-    'Miami Heat'             => 'Miami'
+    'Los Angeles Lakers' => 'Los Angeles',
+    'Golden State Warriors' => 'San Francisco',
+    'Brooklyn Nets' => 'New York',
+    'Milwaukee Bucks' => 'Milwaukee',
+    'Los Angeles Clippers' => 'Los Angeles',
+    'Houston Rockets' => 'Houston',
+    'Dallas Mavericks' => 'Dallas',
+    'Philadelphia 76ers' => 'Philadelphie',
+    'Denver Nuggets' => 'Denver',
+    'Miami Heat' => 'Miami',
 ];
 
 $joueurs = [
@@ -24,27 +24,41 @@ $joueurs = [
     'Davis' => 'Anthony',
     'Doncic' => 'Luka',
     'Embiid' => 'Joel',
-    'Jokic' => 'Nikola'
+    'Jokic' => 'Nikola',
 ];
 
-for ($i = 1; $i <= 10; $i++) {
-    [$nomEquipe1, $nomEquipe2] = array_rand($clubs, 2);
-
-    $match = new BasketballMatch();
-    $match->setTeamScore(rand(80, 120));
-    $match->setOpponentScore(rand(80, 120));
-    $match->setDate(new DateTime('2023-01-' . rand(1, 31)));
-    $match->setCity($clubs[$nomEquipe1]);
-    $match->setTeam(new Team(null, $nomEquipe1));
-    $match->setOpposingClub(new OpposingClub(null, $nomEquipe2));
-
+$teamIndex = 1;
+foreach ($clubs as $nomEquipe => $ville) {
+    $team = new Team($teamIndex, $nomEquipe, 'logo-' . strtolower(str_replace(' ', '-', $nomEquipe)) . '.png');
+    $opposingClub = new OpposingClub($teamIndex, $nomEquipe, 'Rue du basket ' . $teamIndex, $ville);
     $nomJoueur = array_rand($joueurs);
     $prenomJoueur = $joueurs[$nomJoueur];
-    $joueur = new Player(null, $prenomJoueur, $nomJoueur);
+    $joueur = new Player(
+        $teamIndex,
+        $prenomJoueur,
+        $nomJoueur,
+        new DateTime('1995-01-01'),
+        'photo-' . strtolower($prenomJoueur) . '.jpg'
+    );
 
-    echo "Match $i : " . $match->getTeam()->getName() . " vs " . $match->getOpposingClub()->getName() . "<br>";
+    $match = new BasketballMatch(
+        $teamIndex,
+        rand(80, 120),
+        rand(80, 120),
+        new DateTime('2023-01-' . rand(1, 31) . ' 20:00:00'),
+        $ville,
+        $team,
+        $opposingClub
+    );
+
+    echo "Match $teamIndex : " . $match->getTeam()->getName() . " vs " . $match->getOpposingClub()->getName() . "<br>";
     echo "Score : " . $match->getTeamScore() . " - " . $match->getOpponentScore() . "<br>";
     echo "Date : " . $match->getDate()->format('Y-m-d') . "<br>";
     echo "City : " . $match->getCity() . "<br>";
-    echo "Joueur : " . $joueur->getFirstName() . ' ' . $joueur->getLastName() . "<br>";
+    echo "Joueur : " . $joueur->getFirstName() . ' ' . $joueur->getLastName() . "<br><br>";
+
+    $teamIndex++;
+    if ($teamIndex > 10) {
+        break;
+    }
 }
