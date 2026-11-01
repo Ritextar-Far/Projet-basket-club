@@ -27,6 +27,22 @@ class PlayerHasTeamRepository
         );
     }
 
+    /**
+     * Composition d'une équipe : tous ses joueurs, avec le rôle de chacun.
+     */
+    public function findByTeam(int $teamId): array
+    {
+        $statement = $this->pdo->prepare(
+            $this->selectWithRelations() . ' WHERE pt.team_id = :team_id ORDER BY p.last_name, p.first_name'
+        );
+        $statement->execute(['team_id' => $teamId]);
+
+        return array_map(
+            fn (array $row): PlayerHasTeam => $this->hydrate($row),
+            $statement->fetchAll()
+        );
+    }
+
     public function findByPlayerAndTeam(int $playerId, int $teamId): ?PlayerHasTeam
     {
         $statement = $this->pdo->prepare(

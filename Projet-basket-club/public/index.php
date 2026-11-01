@@ -48,6 +48,7 @@ function e(?string $value): string
                         <?php endif; ?>
                         <span class="info"><?= e($team->getName()) ?></span>
                         <a class="button" href="team_form.php?id=<?= $team->getId() ?>">Modifier</a>
+                        <a class="button" href="team_details.php?id=<?= $team->getId() ?>">Détails</a>
                     </li>
                 <?php endforeach; ?>
             </ul>
@@ -69,8 +70,7 @@ function e(?string $value): string
                             <img src="images/<?= e($player->getPicture()) ?>" alt="Photo de <?= e($player->getFirstName() . ' ' . $player->getLastName()) ?>">
                         <?php endif; ?>
                         <span class="info"><?= e($player->getLastName()) ?> <?= e($player->getFirstName()) ?></span>
-                        <a class="button" href="player_form.php?id=<?= $player->getId() ?>">Modifier</a>
-                    </li>
+                        <a class="button" href="player_form.php?id=<?= $player->getId() ?>">Modifier</a>                    </li>
                 <?php endforeach; ?>
             </ul>
         <?php endif; ?>
