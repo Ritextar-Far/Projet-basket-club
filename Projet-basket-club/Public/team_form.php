@@ -49,16 +49,17 @@ function e(?string $value): string
 <head>
     <meta charset="UTF-8">
     <title><?= $team ? 'Modifier une équipe' : 'Ajouter une équipe' ?></title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <h1><?= $team ? 'Modifier une équipe' : 'Ajouter une équipe' ?></h1>
 
     <?php if (isset($_GET['saved'])): ?>
-        <p style="color: green;">L'équipe a bien été enregistrée.</p>
+        <p class="success">L'équipe a bien été enregistrée.</p>
     <?php endif; ?>
 
     <?php if (isset($errors['id'])): ?>
-        <p style="color: red;"><?= e($errors['id']) ?></p>
+        <p class="error"><?= e($errors['id']) ?></p>
     <?php endif; ?>
 
     <form method="post">
@@ -69,7 +70,7 @@ function e(?string $value): string
             <input type="text" id="name" name="name" maxlength="150" required
                    value="<?= e($values['name'] ?? '') ?>">
             <?php if (isset($errors['name'])): ?>
-                <br><span style="color: red;"><?= e($errors['name']) ?></span>
+                <br><span class="error"><?= e($errors['name']) ?></span>
             <?php endif; ?>
         </p>
 
@@ -78,11 +79,11 @@ function e(?string $value): string
             <input type="text" id="logo" name="logo" maxlength="255"
                    value="<?= e($values['logo'] ?? '') ?>">
             <?php if (isset($errors['logo'])): ?>
-                <br><span style="color: red;"><?= e($errors['logo']) ?></span>
+                <br><span class="error"><?= e($errors['logo']) ?></span>
             <?php endif; ?>
         </p>
 
-        <button type="submit"><?= $team ? 'Enregistrer les modifications' : 'Ajouter l\'équipe' ?></button>
+        <button class="button" type="submit"><?= $team ? 'Enregistrer les modifications' : 'Ajouter l\'équipe' ?></button>
     </form>
 </body>
 </html>

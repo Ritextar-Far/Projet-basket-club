@@ -50,16 +50,17 @@ function e(?string $value): string
 <head>
     <meta charset="UTF-8">
     <title><?= $club ? 'Modifier un club adverse' : 'Ajouter un club adverse' ?></title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <h1><?= $club ? 'Modifier un club adverse' : 'Ajouter un club adverse' ?></h1>
 
     <?php if (isset($_GET['saved'])): ?>
-        <p style="color: green;">Le club adverse a bien été enregistré.</p>
+        <p class="success">Le club adverse a bien été enregistré.</p>
     <?php endif; ?>
 
     <?php if (isset($errors['id'])): ?>
-        <p style="color: red;"><?= e($errors['id']) ?></p>
+        <p class="error"><?= e($errors['id']) ?></p>
     <?php endif; ?>
 
     <form method="post">
@@ -70,7 +71,7 @@ function e(?string $value): string
             <input type="text" id="name" name="name" maxlength="150" required
                    value="<?= e($values['name'] ?? '') ?>">
             <?php if (isset($errors['name'])): ?>
-                <br><span style="color: red;"><?= e($errors['name']) ?></span>
+                <br><span class="error"><?= e($errors['name']) ?></span>
             <?php endif; ?>
         </p>
 
@@ -79,7 +80,7 @@ function e(?string $value): string
             <input type="text" id="address" name="address" maxlength="255" required
                    value="<?= e($values['address'] ?? '') ?>">
             <?php if (isset($errors['address'])): ?>
-                <br><span style="color: red;"><?= e($errors['address']) ?></span>
+                <br><span class="error"><?= e($errors['address']) ?></span>
             <?php endif; ?>
         </p>
 
@@ -88,11 +89,11 @@ function e(?string $value): string
             <input type="text" id="city" name="city" maxlength="150" required
                    value="<?= e($values['city'] ?? '') ?>">
             <?php if (isset($errors['city'])): ?>
-                <br><span style="color: red;"><?= e($errors['city']) ?></span>
+                <br><span class="error"><?= e($errors['city']) ?></span>
             <?php endif; ?>
         </p>
 
-        <button type="submit"><?= $club ? 'Enregistrer les modifications' : 'Ajouter le club' ?></button>
+        <button class="button" type="submit"><?= $club ? 'Enregistrer les modifications' : 'Ajouter le club' ?></button>
     </form>
 </body>
 </html>

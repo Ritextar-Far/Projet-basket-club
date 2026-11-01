@@ -2,50 +2,96 @@
 
 namespace Public;
 
-use App\Enumerations\StaffRole;
-use App\Model\BasketballMatch;
-use App\Model\OpposingClub;
-use App\Model\Player;
-use App\Model\Staff;
-use App\Model\Team;
-use DateTime;
+use App\Repositories\OpposingClubRepository;
+use App\Repositories\PlayerRepository;
+use App\Repositories\TeamRepository;
 
 require_once __DIR__ . '/../src/Chargement.php';
+require_once __DIR__ . '/../config/Connexion.php';
 
-$team = new Team(1, 'Los Angeles Lakers', 'logo-lakers.png');
-$opposingClub = new OpposingClub(1, 'Golden State Warriors', '123 Main Street', 'San Francisco');
-$coach = new Staff(1, 'Frank', 'Vogel', 'coach.jpg', StaffRole::COACH);
-$player = new Player(1, 'LeBron', 'James', new DateTime('1984-12-30'), 'lebron.jpg');
-$match = new BasketballMatch(
-    1,
-    110,
-    104,
-    new DateTime('2024-01-15 20:00:00'),
-    'Los Angeles',
-    $team,
-    $opposingClub
-);
+$teams = (new TeamRepository($pdo))->findAll();
+$players = (new PlayerRepository($pdo))->findAll();
+$opposingClubs = (new OpposingClubRepository($pdo))->findAll();
+
+function e(?string $value): string
+{
+    return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Basket Club</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <h1>Projet Basket Club</h1>
 
-    <h2>Équipe</h2>
-    <p>Nom : <?= $team->getName() ?></p>
-    <p>Logo : <?= $team->getLogo() ?></p>
+    <section>
+        <h2>Équipes du club</h2>
 
-    <h2>Joueur</h2>
-    <p><?= $player->getFirstName() . ' ' . $player->getLastName() ?></p>
+        <?php if ($teams === []): ?>
+            <p>Aucune équipe pour le moment.</p>
+        <?php else: ?>
+            <ul>
+                <?php foreach ($teams as $team): ?>
+                    <li>
+                        <?php if ($team->getLogo() !== ''): ?>
+                            <img src="images/<?= e($team->getLogo()) ?>" alt="Logo <?= e($team->getName()) ?>">
+                        <?php endif; ?>
+                        <span class="info"><?= e($team->getName()) ?></span>
+                        <a class="button" href="team_form.php?id=<?= $team->getId() ?>">Modifier</a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
 
-    <h2>Staff</h2>
-    <p><?= $coach->getFirstName() . ' ' . $coach->getLastName() . ' - ' . $coach->getRole()->label() ?></p>
+        <a class="button add" href="team_form.php">Ajouter une équipe</a>
+    </section>
 
-    <h2>Match</h2>
-    <p><?= $team->getName() . ' ' . $match->getTeamScore() . ' - ' . $match->getOpponentScore() . ' ' . $opposingClub->getName() ?></p>
+    <section>
+        <h2>Joueurs du club</h2>
+
+        <?php if ($players === []): ?>
+            <p>Aucun joueur pour le moment.</p>
+        <?php else: ?>
+            <ul>
+                <?php foreach ($players as $player): ?>
+                    <li>
+                        <?php if ($player->getPicture() !== ''): ?>
+                            <img src="images/<?= e($player->getPicture()) ?>" alt="Photo de <?= e($player->getFirstName() . ' ' . $player->getLastName()) ?>">
+                        <?php endif; ?>
+                        <span class="info"><?= e($player->getLastName()) ?> <?= e($player->getFirstName()) ?></span>
+                        <a class="button" href="player_form.php?id=<?= $player->getId() ?>">Modifier</a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+
+        <a class="button add" href="player_form.php">Ajouter un joueur</a>
+    </section>
+
+    <section>
+        <h2>Clubs adverses</h2>
+
+        <?php if ($opposingClubs === []): ?>
+            <p>Aucun club adverse pour le moment.</p>
+        <?php else: ?>
+            <ul>
+                <?php foreach ($opposingClubs as $club): ?>
+                    <li>
+                        <span class="info">
+                            <strong><?= e($club->getName()) ?></strong><br>
+                            <?= e($club->getAddress()) ?>, <?= e($club->getCity()) ?>
+                        </span>
+                        <a class="button" href="opposing_club_form.php?id=<?= $club->getId() ?>">Modifier</a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+
+        <a class="button add" href="opposing_club_form.php">Ajouter un club adverse</a>
+    </section>
 </body>
 </html>

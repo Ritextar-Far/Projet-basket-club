@@ -51,16 +51,17 @@ function e(?string $value): string
 <head>
     <meta charset="UTF-8">
     <title><?= $player ? 'Modifier un joueur' : 'Ajouter un joueur' ?></title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <h1><?= $player ? 'Modifier un joueur' : 'Ajouter un joueur' ?></h1>
 
     <?php if (isset($_GET['saved'])): ?>
-        <p style="color: green;">Le joueur a bien été enregistré.</p>
+        <p class="success">Le joueur a bien été enregistré.</p>
     <?php endif; ?>
 
     <?php if (isset($errors['id'])): ?>
-        <p style="color: red;"><?= e($errors['id']) ?></p>
+        <p class="error"><?= e($errors['id']) ?></p>
     <?php endif; ?>
 
     <form method="post">
@@ -71,7 +72,7 @@ function e(?string $value): string
             <input type="text" id="first_name" name="first_name" maxlength="100" required
                    value="<?= e($values['first_name'] ?? '') ?>">
             <?php if (isset($errors['first_name'])): ?>
-                <br><span style="color: red;"><?= e($errors['first_name']) ?></span>
+                <br><span class="error"><?= e($errors['first_name']) ?></span>
             <?php endif; ?>
         </p>
 
@@ -80,7 +81,7 @@ function e(?string $value): string
             <input type="text" id="last_name" name="last_name" maxlength="100" required
                    value="<?= e($values['last_name'] ?? '') ?>">
             <?php if (isset($errors['last_name'])): ?>
-                <br><span style="color: red;"><?= e($errors['last_name']) ?></span>
+                <br><span class="error"><?= e($errors['last_name']) ?></span>
             <?php endif; ?>
         </p>
 
@@ -89,7 +90,7 @@ function e(?string $value): string
             <input type="date" id="birth_date" name="birth_date" required
                    value="<?= e($values['birth_date'] ?? '') ?>">
             <?php if (isset($errors['birth_date'])): ?>
-                <br><span style="color: red;"><?= e($errors['birth_date']) ?></span>
+                <br><span class="error"><?= e($errors['birth_date']) ?></span>
             <?php endif; ?>
         </p>
 
@@ -98,11 +99,11 @@ function e(?string $value): string
             <input type="text" id="picture" name="picture" maxlength="255"
                    value="<?= e($values['picture'] ?? '') ?>">
             <?php if (isset($errors['picture'])): ?>
-                <br><span style="color: red;"><?= e($errors['picture']) ?></span>
+                <br><span class="error"><?= e($errors['picture']) ?></span>
             <?php endif; ?>
         </p>
 
-        <button type="submit"><?= $player ? 'Enregistrer les modifications' : 'Ajouter le joueur' ?></button>
+        <button class="button" type="submit"><?= $player ? 'Enregistrer les modifications' : 'Ajouter le joueur' ?></button>
     </form>
 </body>
 </html>
