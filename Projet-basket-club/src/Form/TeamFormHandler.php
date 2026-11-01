@@ -6,6 +6,7 @@ namespace App\Form;
 
 use App\Model\Team;
 use App\Repositories\TeamRepository;
+use Respect\Validation\Validator as v;
 
 class TeamFormHandler
 {
@@ -21,20 +22,23 @@ class TeamFormHandler
      */
     public function handle(array $input): ?Team
     {
-        $this->errors = [];
-
         $id = (int) ($input['id'] ?? 0);
-        $name = trim((string) ($input['name'] ?? ''));
-        $logo = trim((string) ($input['logo'] ?? ''));
+        $data = [
+            'name' => trim((string) ($input['name'] ?? '')),
+            'logo' => trim((string) ($input['logo'] ?? '')),
+        ];
 
-        if ($name === '') {
-            $this->errors['name'] = 'Le nom de l\'équipe est obligatoire.';
-        } elseif (mb_strlen($name) > 150) {
-            $this->errors['name'] = 'Le nom de l\'équipe ne doit pas dépasser 150 caractères.';
-        }
+        // Pour chaque champ : la règle à respecter et le message si elle ne l'est pas
+        $rules = [
+            'name' => [v::notEmpty()->length(1, 150), 'Le nom de l\'équipe est obligatoire (150 caractères maximum).'],
+            'logo' => [v::length(null, 255), 'Le nom du logo ne doit pas dépasser 255 caractères.'],
+        ];
 
-        if (mb_strlen($logo) > 255) {
-            $this->errors['logo'] = 'Le nom du logo ne doit pas dépasser 255 caractères.';
+        $this->errors = [];
+        foreach ($rules as $field => [$rule, $message]) {
+            if (!$rule->validate($data[$field])) {
+                $this->errors[$field] = $message;
+            }
         }
 
         $team = null;
@@ -50,15 +54,15 @@ class TeamFormHandler
         }
 
         if ($team === null) {
-            $team = new Team(0, $name, $logo);
+            $team = new Team(0, $data['name'], $data['logo']);
             $team->setId($this->repository->create($team));
 
             return $team;
         }
 
         $team
-            ->setName($name)
-            ->setLogo($logo);
+            ->setName($data['name'])
+            ->setLogo($data['logo']);
         $this->repository->update($team);
 
         return $team;

@@ -7,6 +7,7 @@ namespace App\Form;
 use App\Model\Player;
 use App\Repositories\PlayerRepository;
 use DateTime;
+use Respect\Validation\Validator as v;
 
 class PlayerFormHandler
 {
@@ -22,20 +23,27 @@ class PlayerFormHandler
      */
     public function handle(array $input): ?Player
     {
-        $this->errors = [];
-
         $id = (int) ($input['id'] ?? 0);
-        $firstName = trim((string) ($input['first_name'] ?? ''));
-        $lastName = trim((string) ($input['last_name'] ?? ''));
-        $birthDate = trim((string) ($input['birth_date'] ?? ''));
-        $picture = trim((string) ($input['picture'] ?? ''));
+        $data = [
+            'first_name' => trim((string) ($input['first_name'] ?? '')),
+            'last_name' => trim((string) ($input['last_name'] ?? '')),
+            'birth_date' => trim((string) ($input['birth_date'] ?? '')),
+            'picture' => trim((string) ($input['picture'] ?? '')),
+        ];
 
-        $this->validateName('first_name', 'Le prénom', $firstName);
-        $this->validateName('last_name', 'Le nom', $lastName);
-        $date = $this->validateBirthDate($birthDate);
+        // Pour chaque champ : la règle à respecter et le message si elle ne l'est pas
+        $rules = [
+            'first_name' => [v::notEmpty()->length(1, 100), 'Le prénom est obligatoire (100 caractères maximum).'],
+            'last_name' => [v::notEmpty()->length(1, 100), 'Le nom est obligatoire (100 caractères maximum).'],
+            'birth_date' => [v::date('Y-m-d')->max(date('Y-m-d')), 'La date de naissance doit être une date valide et passée.'],
+            'picture' => [v::length(null, 255), 'Le nom de la photo ne doit pas dépasser 255 caractères.'],
+        ];
 
-        if (mb_strlen($picture) > 255) {
-            $this->errors['picture'] = 'Le nom de la photo ne doit pas dépasser 255 caractères.';
+        $this->errors = [];
+        foreach ($rules as $field => [$rule, $message]) {
+            if (!$rule->validate($data[$field])) {
+                $this->errors[$field] = $message;
+            }
         }
 
         $player = null;
@@ -50,18 +58,20 @@ class PlayerFormHandler
             return null;
         }
 
+        $birthDate = new DateTime($data['birth_date']);
+
         if ($player === null) {
-            $player = new Player(0, $firstName, $lastName, $date, $picture);
+            $player = new Player(0, $data['first_name'], $data['last_name'], $birthDate, $data['picture']);
             $player->setId($this->repository->create($player));
 
             return $player;
         }
 
         $player
-            ->setFirstName($firstName)
-            ->setLastName($lastName)
-            ->setBirthDate($date)
-            ->setPicture($picture);
+            ->setFirstName($data['first_name'])
+            ->setLastName($data['last_name'])
+            ->setBirthDate($birthDate)
+            ->setPicture($data['picture']);
         $this->repository->update($player);
 
         return $player;
@@ -70,35 +80,5 @@ class PlayerFormHandler
     public function getErrors(): array
     {
         return $this->errors;
-    }
-
-    private function validateName(string $field, string $label, string $value): void
-    {
-        if ($value === '') {
-            $this->errors[$field] = $label . ' est obligatoire.';
-        } elseif (mb_strlen($value) > 100) {
-            $this->errors[$field] = $label . ' ne doit pas dépasser 100 caractères.';
-        }
-    }
-
-    private function validateBirthDate(string $value): ?DateTime
-    {
-        if ($value === '') {
-            $this->errors['birth_date'] = 'La date de naissance est obligatoire.';
-            return null;
-        }
-
-        $date = DateTime::createFromFormat('!Y-m-d', $value);
-        if ($date === false || $date->format('Y-m-d') !== $value) {
-            $this->errors['birth_date'] = 'La date de naissance n\'est pas valide.';
-            return null;
-        }
-
-        if ($date > new DateTime()) {
-            $this->errors['birth_date'] = 'La date de naissance ne peut pas être dans le futur.';
-            return null;
-        }
-
-        return $date;
     }
 }
