@@ -4,6 +4,7 @@ namespace Public;
 
 use App\Form\PlayerFormHandler;
 use App\Repositories\PlayerRepository;
+use App\Security\CsrfToken;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../config/Connexion.php';
@@ -23,6 +24,12 @@ if (isset($_GET['id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Refuse l'envoi si le jeton du formulaire ne correspond pas à celui de la session
+    if (!CsrfToken::isValid($_POST['csrf_token'] ?? null)) {
+        http_response_code(403);
+        exit('Formulaire invalide ou expiré, veuillez recharger la page.');
+    }
+
     $saved = $handler->handle($_POST);
 
     if ($saved !== null) {
@@ -40,6 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'picture' => $player?->getPicture() ?? '',
     ];
 }
+
+// Jeton CSRF récupéré avant tout affichage (la session doit démarrer avant le HTML)
+$csrfToken = CsrfToken::get();
 
 function e(?string $value): string
 {
@@ -68,6 +78,7 @@ function e(?string $value): string
 
     <form method="post">
         <input type="hidden" name="id" value="<?= $player?->getId() ?? 0 ?>">
+        <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">
 
         <p>
             <label for="first_name">Prénom</label><br>
