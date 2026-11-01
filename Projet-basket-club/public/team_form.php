@@ -52,6 +52,8 @@ function e(?string $value): string
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <a class="button back" href="index.php">&larr; Retour à l'accueil</a>
+
     <h1><?= $team ? 'Modifier une équipe' : 'Ajouter une équipe' ?></h1>
 
     <?php if (isset($_GET['saved'])): ?>

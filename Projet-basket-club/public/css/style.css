@@ -9,3 +9,4 @@ li .info { flex: 1; }
 button.button { border: none; font-size: 1em; cursor: pointer; }
 .error { color: #c00; }
 .success { color: #080; }
+.button.back { background: #666; margin-top: 16px; }

@@ -53,6 +53,8 @@ function e(?string $value): string
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <a class="button back" href="index.php">&larr; Retour à l'accueil</a>
+
     <h1><?= $club ? 'Modifier un club adverse' : 'Ajouter un club adverse' ?></h1>
 
     <?php if (isset($_GET['saved'])): ?>
