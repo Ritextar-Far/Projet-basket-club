@@ -5,7 +5,7 @@ namespace Public;
 use App\Form\OpposingClubFormHandler;
 use App\Repositories\OpposingClubRepository;
 
-require_once __DIR__ . '/../src/Chargement.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../config/Connexion.php';
 
 $repository = new OpposingClubRepository($pdo);

@@ -6,7 +6,7 @@ use App\Repositories\OpposingClubRepository;
 use App\Repositories\PlayerRepository;
 use App\Repositories\TeamRepository;
 
-require_once __DIR__ . '/../src/Chargement.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../config/Connexion.php';
 
 $teams = (new TeamRepository($pdo))->findAll();

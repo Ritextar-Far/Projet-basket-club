@@ -8,7 +8,7 @@ use App\Model\Player;
 use App\Model\Team;
 use DateTime;
 
-require_once __DIR__ . '/../src/Chargement.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 $clubs = [
     'Los Angeles Lakers' => 'Los Angeles',
