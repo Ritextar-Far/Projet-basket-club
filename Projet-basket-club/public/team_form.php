@@ -39,11 +39,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $errors = $handler->getErrors();
     $values = $_POST;
-} else {
+} elseif ($team !== null) {
+    // Édition : on pré-remplit le formulaire avec les valeurs de l'équipe
     $values = [
-        'name' => $team?->getName() ?? '',
-        'logo' => $team?->getLogo() ?? '',
+        'name' => $team->getName(),
+        'logo' => $team->getLogo(),
     ];
+} else {
+    // Ajout : formulaire vide
+    $values = [];
+}
+
+// Identifiant envoyé dans le champ caché : 0 pour un ajout, l'id de l'équipe pour une édition
+$id = 0;
+if ($team !== null) {
+    $id = $team->getId();
 }
 
 // Jeton CSRF récupéré avant tout affichage (la session doit démarrer avant le HTML)
@@ -71,7 +81,7 @@ function e(?string $value): string
     <?php endif; ?>
 
     <form method="post">
-        <input type="hidden" name="id" value="<?= $team?->getId() ?? 0 ?>">
+        <input type="hidden" name="id" value="<?= $id ?>">
         <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">
 
         <p>

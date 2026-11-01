@@ -39,12 +39,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $errors = $handler->getErrors();
     $values = $_POST;
-} else {
+} elseif ($club !== null) {
+    // Édition : on pré-remplit le formulaire avec les valeurs du club
     $values = [
-        'name' => $club?->getName() ?? '',
-        'address' => $club?->getAddress() ?? '',
-        'city' => $club?->getCity() ?? '',
+        'name' => $club->getName(),
+        'address' => $club->getAddress(),
+        'city' => $club->getCity(),
     ];
+} else {
+    // Ajout : formulaire vide
+    $values = [];
+}
+
+// Identifiant envoyé dans le champ caché : 0 pour un ajout, l'id du club pour une édition
+$id = 0;
+if ($club !== null) {
+    $id = $club->getId();
 }
 
 // Jeton CSRF récupéré avant tout affichage (la session doit démarrer avant le HTML)
@@ -72,7 +82,7 @@ function e(?string $value): string
     <?php endif; ?>
 
     <form method="post">
-        <input type="hidden" name="id" value="<?= $club?->getId() ?? 0 ?>">
+        <input type="hidden" name="id" value="<?= $id ?>">
         <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">
 
         <p>

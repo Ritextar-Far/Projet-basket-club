@@ -47,15 +47,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $errors = $handler->getErrors();
     $values = $_POST;
-} else {
+} elseif ($match !== null) {
+    // Édition : on pré-remplit le formulaire avec les valeurs du match
     $values = [
-        'team_id' => $match?->getTeam()->getId() ?? '',
-        'opposing_club_id' => $match?->getOpposingClub()->getId() ?? '',
-        'team_score' => $match?->getTeamScore() ?? '',
-        'opponent_score' => $match?->getOpponentScore() ?? '',
-        'date' => $match?->getDate()->format('Y-m-d\TH:i') ?? '',
-        'city' => $match?->getCity() ?? '',
+        'team_id' => $match->getTeam()->getId(),
+        'opposing_club_id' => $match->getOpposingClub()->getId(),
+        'team_score' => $match->getTeamScore(),
+        'opponent_score' => $match->getOpponentScore(),
+        'date' => $match->getDate()->format('Y-m-d\TH:i'),
+        'city' => $match->getCity(),
     ];
+} else {
+    // Ajout : formulaire vide
+    $values = [];
+}
+
+// Identifiant envoyé dans le champ caché : 0 pour un ajout, l'id du match pour une édition
+$id = 0;
+if ($match !== null) {
+    $id = $match->getId();
 }
 
 // Jeton CSRF récupéré avant tout affichage (la session doit démarrer avant le HTML)
@@ -87,7 +97,7 @@ function e(?string $value): string
     <?php endif; ?>
 
     <form method="post">
-        <input type="hidden" name="id" value="<?= $match?->getId() ?? 0 ?>">
+        <input type="hidden" name="id" value="<?= $id ?>">
         <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">
 
         <p>

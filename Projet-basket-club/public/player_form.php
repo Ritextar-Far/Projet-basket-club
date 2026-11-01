@@ -39,13 +39,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $errors = $handler->getErrors();
     $values = $_POST;
-} else {
+} elseif ($player !== null) {
+    // Édition : on pré-remplit le formulaire avec les valeurs du joueur
     $values = [
-        'first_name' => $player?->getFirstName() ?? '',
-        'last_name' => $player?->getLastName() ?? '',
-        'birth_date' => $player?->getBirthDate()->format('Y-m-d') ?? '',
-        'picture' => $player?->getPicture() ?? '',
+        'first_name' => $player->getFirstName(),
+        'last_name' => $player->getLastName(),
+        'birth_date' => $player->getBirthDate()->format('Y-m-d'),
+        'picture' => $player->getPicture(),
     ];
+} else {
+    // Ajout : formulaire vide
+    $values = [];
+}
+
+// Identifiant envoyé dans le champ caché : 0 pour un ajout, l'id du joueur pour une édition
+$id = 0;
+if ($player !== null) {
+    $id = $player->getId();
 }
 
 // Jeton CSRF récupéré avant tout affichage (la session doit démarrer avant le HTML)
@@ -73,7 +83,7 @@ function e(?string $value): string
     <?php endif; ?>
 
     <form method="post">
-        <input type="hidden" name="id" value="<?= $player?->getId() ?? 0 ?>">
+        <input type="hidden" name="id" value="<?= $id ?>">
         <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">
 
         <p>
