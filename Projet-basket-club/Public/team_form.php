@@ -1,0 +1,88 @@
+<?php
+
+namespace Public;
+
+use App\Form\TeamFormHandler;
+use App\Repositories\TeamRepository;
+
+require_once __DIR__ . '/../src/Chargement.php';
+require_once __DIR__ . '/../config/Connexion.php';
+
+$repository = new TeamRepository($pdo);
+$handler = new TeamFormHandler($repository);
+$errors = [];
+
+// Édition : on récupère l'équipe via le repository, qui renvoie un objet Team
+$team = null;
+if (isset($_GET['id'])) {
+    $team = $repository->findById((int) $_GET['id']);
+    if ($team === null) {
+        http_response_code(404);
+        exit('Équipe introuvable.');
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $saved = $handler->handle($_POST);
+
+    if ($saved !== null) {
+        header('Location: team_form.php?id=' . $saved->getId() . '&saved=1');
+        exit;
+    }
+
+    $errors = $handler->getErrors();
+    $values = $_POST;
+} else {
+    $values = [
+        'name' => $team?->getName() ?? '',
+        'logo' => $team?->getLogo() ?? '',
+    ];
+}
+
+function e(?string $value): string
+{
+    return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
+}
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title><?= $team ? 'Modifier une équipe' : 'Ajouter une équipe' ?></title>
+</head>
+<body>
+    <h1><?= $team ? 'Modifier une équipe' : 'Ajouter une équipe' ?></h1>
+
+    <?php if (isset($_GET['saved'])): ?>
+        <p style="color: green;">L'équipe a bien été enregistrée.</p>
+    <?php endif; ?>
+
+    <?php if (isset($errors['id'])): ?>
+        <p style="color: red;"><?= e($errors['id']) ?></p>
+    <?php endif; ?>
+
+    <form method="post">
+        <input type="hidden" name="id" value="<?= $team?->getId() ?? 0 ?>">
+
+        <p>
+            <label for="name">Nom de l'équipe</label><br>
+            <input type="text" id="name" name="name" maxlength="150" required
+                   value="<?= e($values['name'] ?? '') ?>">
+            <?php if (isset($errors['name'])): ?>
+                <br><span style="color: red;"><?= e($errors['name']) ?></span>
+            <?php endif; ?>
+        </p>
+
+        <p>
+            <label for="logo">Logo (nom du fichier)</label><br>
+            <input type="text" id="logo" name="logo" maxlength="255"
+                   value="<?= e($values['logo'] ?? '') ?>">
+            <?php if (isset($errors['logo'])): ?>
+                <br><span style="color: red;"><?= e($errors['logo']) ?></span>
+            <?php endif; ?>
+        </p>
+
+        <button type="submit"><?= $team ? 'Enregistrer les modifications' : 'Ajouter l\'équipe' ?></button>
+    </form>
+</body>
+</html>

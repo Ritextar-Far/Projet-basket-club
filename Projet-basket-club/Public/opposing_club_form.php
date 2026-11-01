@@ -1,0 +1,98 @@
+<?php
+
+namespace Public;
+
+use App\Form\OpposingClubFormHandler;
+use App\Repositories\OpposingClubRepository;
+
+require_once __DIR__ . '/../src/Chargement.php';
+require_once __DIR__ . '/../config/Connexion.php';
+
+$repository = new OpposingClubRepository($pdo);
+$handler = new OpposingClubFormHandler($repository);
+$errors = [];
+
+// Édition : on récupère le club via le repository, qui renvoie un objet OpposingClub
+$club = null;
+if (isset($_GET['id'])) {
+    $club = $repository->findById((int) $_GET['id']);
+    if ($club === null) {
+        http_response_code(404);
+        exit('Club adverse introuvable.');
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $saved = $handler->handle($_POST);
+
+    if ($saved !== null) {
+        header('Location: opposing_club_form.php?id=' . $saved->getId() . '&saved=1');
+        exit;
+    }
+
+    $errors = $handler->getErrors();
+    $values = $_POST;
+} else {
+    $values = [
+        'name' => $club?->getName() ?? '',
+        'address' => $club?->getAddress() ?? '',
+        'city' => $club?->getCity() ?? '',
+    ];
+}
+
+function e(?string $value): string
+{
+    return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
+}
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title><?= $club ? 'Modifier un club adverse' : 'Ajouter un club adverse' ?></title>
+</head>
+<body>
+    <h1><?= $club ? 'Modifier un club adverse' : 'Ajouter un club adverse' ?></h1>
+
+    <?php if (isset($_GET['saved'])): ?>
+        <p style="color: green;">Le club adverse a bien été enregistré.</p>
+    <?php endif; ?>
+
+    <?php if (isset($errors['id'])): ?>
+        <p style="color: red;"><?= e($errors['id']) ?></p>
+    <?php endif; ?>
+
+    <form method="post">
+        <input type="hidden" name="id" value="<?= $club?->getId() ?? 0 ?>">
+
+        <p>
+            <label for="name">Nom du club</label><br>
+            <input type="text" id="name" name="name" maxlength="150" required
+                   value="<?= e($values['name'] ?? '') ?>">
+            <?php if (isset($errors['name'])): ?>
+                <br><span style="color: red;"><?= e($errors['name']) ?></span>
+            <?php endif; ?>
+        </p>
+
+        <p>
+            <label for="address">Adresse</label><br>
+            <input type="text" id="address" name="address" maxlength="255" required
+                   value="<?= e($values['address'] ?? '') ?>">
+            <?php if (isset($errors['address'])): ?>
+                <br><span style="color: red;"><?= e($errors['address']) ?></span>
+            <?php endif; ?>
+        </p>
+
+        <p>
+            <label for="city">Ville</label><br>
+            <input type="text" id="city" name="city" maxlength="150" required
+                   value="<?= e($values['city'] ?? '') ?>">
+            <?php if (isset($errors['city'])): ?>
+                <br><span style="color: red;"><?= e($errors['city']) ?></span>
+            <?php endif; ?>
+        </p>
+
+        <button type="submit"><?= $club ? 'Enregistrer les modifications' : 'Ajouter le club' ?></button>
+    </form>
+</body>
+</html>
