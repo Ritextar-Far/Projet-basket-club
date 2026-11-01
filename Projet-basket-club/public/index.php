@@ -2,6 +2,7 @@
 
 namespace Public;
 
+use App\Repositories\BasketballMatchRepository;
 use App\Repositories\OpposingClubRepository;
 use App\Repositories\PlayerRepository;
 use App\Repositories\TeamRepository;
@@ -12,6 +13,7 @@ require_once __DIR__ . '/../config/Connexion.php';
 $teams = (new TeamRepository($pdo))->findAll();
 $players = (new PlayerRepository($pdo))->findAll();
 $opposingClubs = (new OpposingClubRepository($pdo))->findAll();
+$playedMatches = (new BasketballMatchRepository($pdo))->findPlayed();
 
 function e(?string $value): string
 {
@@ -92,6 +94,32 @@ function e(?string $value): string
         <?php endif; ?>
 
         <a class="button add" href="opposing_club_form.php">Ajouter un club adverse</a>
+    </section>
+
+    <section>
+        <h2>Matchs joués</h2>
+
+        <?php if ($playedMatches === []): ?>
+            <p>Aucun match joué pour le moment.</p>
+        <?php else: ?>
+            <ul>
+                <?php foreach ($playedMatches as $match): ?>
+                    <li>
+                        <span class="info">
+                            <strong>
+                                <?= e($match->getTeam()->getName()) ?>
+                                <?= $match->getTeamScore() ?> - <?= $match->getOpponentScore() ?>
+                                <?= e($match->getOpposingClub()->getName()) ?>
+                            </strong><br>
+                            Le <?= $match->getDate()->format('d/m/Y à H\hi') ?>, à <?= e($match->getCity()) ?>
+                        </span>
+                        <a class="button" href="match_form.php?id=<?= $match->getId() ?>">Modifier</a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+
+        <a class="button add" href="match_form.php">Ajouter un match</a>
     </section>
 </body>
 </html>

@@ -26,6 +26,22 @@ class BasketballMatchRepository
         );
     }
 
+    /**
+     * Matchs déjà joués (date passée), du plus récent au plus ancien.
+     */
+    public function findPlayed(): array
+    {
+        $statement = $this->pdo->prepare(
+            $this->selectWithRelations() . ' WHERE m.`date` <= :now ORDER BY m.`date` DESC'
+        );
+        $statement->execute(['now' => date('Y-m-d H:i:s')]);
+
+        return array_map(
+            fn (array $row): BasketballMatch => $this->hydrate($row),
+            $statement->fetchAll()
+        );
+    }
+
     public function findById(int $id): ?BasketballMatch
     {
         $statement = $this->pdo->prepare(
