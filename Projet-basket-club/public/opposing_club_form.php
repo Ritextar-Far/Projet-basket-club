@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $saved = $handler->handle($_POST);
 
     if ($saved !== null) {
-        header('Location: opposing_club_form.php?id=' . $saved->getId() . '&saved=1');
+        header('Location: index.php?saved=1');
         exit;
     }
 
@@ -66,10 +66,6 @@ function e(?string $value): string
     <a class="button back" href="index.php">&larr; Retour à l'accueil</a>
 
     <h1><?= $club ? 'Modifier un club adverse' : 'Ajouter un club adverse' ?></h1>
-
-    <?php if (isset($_GET['saved'])): ?>
-        <p class="success">Le club adverse a bien été enregistré.</p>
-    <?php endif; ?>
 
     <?php if (isset($errors['id'])): ?>
         <p class="error"><?= e($errors['id']) ?></p>

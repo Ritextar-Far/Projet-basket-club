@@ -30,6 +30,10 @@ function e(?string $value): string
 <body>
     <h1>Projet Basket Club</h1>
 
+    <?php if (isset($_GET['saved'])): ?>
+        <p class="success">Les données ont bien été enregistrées.</p>
+    <?php endif; ?>
+
     <section>
         <h2>Équipes du club</h2>
 

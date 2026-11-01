@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $saved = $handler->handle($_POST);
 
     if ($saved !== null) {
-        header('Location: match_form.php?id=' . $saved->getId() . '&saved=1');
+        header('Location: index.php?saved=1');
         exit;
     }
 
@@ -77,10 +77,6 @@ function e(?string $value): string
     <a class="button back" href="index.php">&larr; Retour à l'accueil</a>
 
     <h1><?= $match ? 'Modifier un match' : 'Ajouter un match' ?></h1>
-
-    <?php if (isset($_GET['saved'])): ?>
-        <p class="success">Le match a bien été enregistré.</p>
-    <?php endif; ?>
 
     <?php if (isset($errors['id'])): ?>
         <p class="error"><?= e($errors['id']) ?></p>
@@ -145,6 +141,7 @@ function e(?string $value): string
         <p>
             <label for="date">Date et heure du match</label><br>
             <input type="datetime-local" id="date" name="date" required
+                   max="<?= date('Y-m-d\TH:i') ?>"
                    value="<?= e($values['date'] ?? '') ?>">
             <?php if (isset($errors['date'])): ?>
                 <br><span class="error"><?= e($errors['date']) ?></span>

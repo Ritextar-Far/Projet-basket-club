@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $saved = $handler->handle($_POST);
 
     if ($saved !== null) {
-        header('Location: team_form.php?id=' . $saved->getId() . '&saved=1');
+        header('Location: index.php?saved=1');
         exit;
     }
 
@@ -65,10 +65,6 @@ function e(?string $value): string
     <a class="button back" href="index.php">&larr; Retour à l'accueil</a>
 
     <h1><?= $team ? 'Modifier une équipe' : 'Ajouter une équipe' ?></h1>
-
-    <?php if (isset($_GET['saved'])): ?>
-        <p class="success">L'équipe a bien été enregistrée.</p>
-    <?php endif; ?>
 
     <?php if (isset($errors['id'])): ?>
         <p class="error"><?= e($errors['id']) ?></p>
