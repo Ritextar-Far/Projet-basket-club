@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Model;
+
+use DateTime;
+
 class Player
 {
     private int $id;

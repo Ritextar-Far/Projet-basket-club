@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+namespace App\Repositories;
+
+use App\Model\Player;
+use DateTime;
+use PDO;
+
 class PlayerRepository
 {
     public function __construct(private PDO $pdo)

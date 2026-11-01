@@ -2,6 +2,8 @@
 
 declare(strict_types = 1);
 
+namespace App\Enumerations;
+
 enum StaffRole: string
 {
     case COACH = 'Coach';

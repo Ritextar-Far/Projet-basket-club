@@ -1,5 +1,16 @@
 <?php
-require_once __DIR__ . '/../inc/Chargement.php';
+
+namespace Public;
+
+use App\Enumerations\StaffRole;
+use App\Model\BasketballMatch;
+use App\Model\OpposingClub;
+use App\Model\Player;
+use App\Model\Staff;
+use App\Model\Team;
+use DateTime;
+
+require_once __DIR__ . '/../src/Chargement.php';
 
 $team = new Team(1, 'Los Angeles Lakers', 'logo-lakers.png');
 $opposingClub = new OpposingClub(1, 'Golden State Warriors', '123 Main Street', 'San Francisco');

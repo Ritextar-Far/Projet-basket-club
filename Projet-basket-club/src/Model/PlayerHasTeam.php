@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Model;
+
+use App\Enumerations\PlayerRole;
+
 class PlayerHasTeam
 {
     private Player $player;

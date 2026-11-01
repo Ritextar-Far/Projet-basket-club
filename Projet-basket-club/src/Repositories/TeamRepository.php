@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+namespace App\Repositories;
+
+use App\Model\Team;
+use PDO;
+
 class TeamRepository
 {
     public function __construct(private PDO $pdo)

@@ -1,4 +1,10 @@
 <?php
+
+namespace Config;
+
+use PDO;
+use PDOException;
+
 $host = "localhost";
 $user = "root";
 $password = "";

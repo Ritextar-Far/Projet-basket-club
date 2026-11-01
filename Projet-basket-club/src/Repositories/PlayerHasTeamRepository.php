@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+namespace App\Repositories;
+
+use App\Enumerations\PlayerRole;
+use App\Model\Player;
+use App\Model\PlayerHasTeam;
+use App\Model\Team;
+use DateTime;
+use PDO;
+
 class PlayerHasTeamRepository
 {
     public function __construct(private PDO $pdo)

@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+namespace App\Repositories;
+
+use App\Model\BasketballMatch;
+use App\Model\OpposingClub;
+use App\Model\Team;
+use DateTime;
+use PDO;
+
 class BasketballMatchRepository
 {
     public function __construct(private PDO $pdo)

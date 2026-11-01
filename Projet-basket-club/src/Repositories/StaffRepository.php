@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+namespace App\Repositories;
+
+use App\Enumerations\StaffRole;
+use App\Model\Staff;
+use PDO;
+
 class StaffRepository
 {
     public function __construct(private PDO $pdo)

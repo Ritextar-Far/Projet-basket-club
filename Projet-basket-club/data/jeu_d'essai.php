@@ -1,5 +1,14 @@
 <?php
-require_once __DIR__ . '/../inc/Chargement.php';
+
+namespace Data;
+
+use App\Model\BasketballMatch;
+use App\Model\OpposingClub;
+use App\Model\Player;
+use App\Model\Team;
+use DateTime;
+
+require_once __DIR__ . '/../src/Chargement.php';
 
 $clubs = [
     'Los Angeles Lakers' => 'Los Angeles',
