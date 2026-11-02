@@ -5,12 +5,14 @@ namespace Public;
 use App\Form\TeamFormHandler;
 use App\Repositories\TeamRepository;
 use App\Security\CsrfToken;
+use App\Service\ImageUploader;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../config/Connexion.php';
 
 $repository = new TeamRepository($pdo);
-$handler = new TeamFormHandler($repository);
+// Les logos envoyés sont enregistrés dans le dossier public/images
+$handler = new TeamFormHandler($repository, new ImageUploader(__DIR__ . '/images'));
 $errors = [];
 
 // Édition : on récupère l'équipe via le repository, qui renvoie un objet Team
@@ -30,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit('Formulaire invalide ou expiré, veuillez recharger la page.');
     }
 
-    $saved = $handler->handle($_POST);
+    $saved = $handler->handle($_POST, $_FILES);
 
     if ($saved !== null) {
         header('Location: index.php?saved=1');
@@ -43,7 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Édition : on pré-remplit le formulaire avec les valeurs de l'équipe
     $values = [
         'name' => $team->getName(),
-        'logo' => $team->getLogo(),
     ];
 } else {
     // Ajout : formulaire vide
@@ -80,7 +81,8 @@ function e(?string $value): string
         <p class="error"><?= e($errors['id']) ?></p>
     <?php endif; ?>
 
-    <form method="post">
+    <!-- enctype="multipart/form-data" est obligatoire pour pouvoir envoyer un fichier -->
+    <form method="post" enctype="multipart/form-data">
         <input type="hidden" name="id" value="<?= $id ?>">
         <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">
 
@@ -94,9 +96,12 @@ function e(?string $value): string
         </p>
 
         <p>
-            <label for="logo">Logo (nom du fichier)</label><br>
-            <input type="text" id="logo" name="logo" maxlength="255"
-                   value="<?= e($values['logo'] ?? '') ?>">
+            <label for="logo">Logo (JPG, PNG, GIF ou WEBP, 2 Mo maximum)</label><br>
+            <?php if ($team !== null && $team->getLogo() !== ''): ?>
+                <img class="preview" src="images/<?= e($team->getLogo()) ?>" alt="Logo actuel"><br>
+                <small>Laissez vide pour garder le logo actuel.</small><br>
+            <?php endif; ?>
+            <input type="file" id="logo" name="logo" accept="image/jpeg,image/png,image/gif,image/webp">
             <?php if (isset($errors['logo'])): ?>
                 <br><span class="error"><?= e($errors['logo']) ?></span>
             <?php endif; ?>

@@ -6,6 +6,7 @@ namespace App\Form;
 
 use App\Model\Player;
 use App\Repositories\PlayerRepository;
+use App\Service\ImageUploader;
 use DateTime;
 use Respect\Validation\Validator as v;
 
@@ -13,22 +14,23 @@ class PlayerFormHandler
 {
     private array $errors = [];
 
-    public function __construct(private PlayerRepository $repository)
-    {
+    public function __construct(
+        private PlayerRepository $repository,
+        private ImageUploader $uploader
+    ) {
     }
 
     /**
-     * Valide les données saisies puis crée ou met à jour le joueur.
+     * Valide les données saisies (et la photo envoyée) puis crée ou met à jour le joueur.
      * Retourne le joueur enregistré, ou null si les données sont invalides.
      */
-    public function handle(array $input): ?Player
+    public function handle(array $input, array $files): ?Player
     {
         $id = (int) ($input['id'] ?? 0);
         $data = [
             'first_name' => trim((string) ($input['first_name'] ?? '')),
             'last_name' => trim((string) ($input['last_name'] ?? '')),
             'birth_date' => trim((string) ($input['birth_date'] ?? '')),
-            'picture' => trim((string) ($input['picture'] ?? '')),
         ];
 
         // Pour chaque champ : la règle à respecter et le message si elle ne l'est pas
@@ -36,13 +38,21 @@ class PlayerFormHandler
             'first_name' => [v::notEmpty()->length(1, 100), 'Le prénom est obligatoire (100 caractères maximum).'],
             'last_name' => [v::notEmpty()->length(1, 100), 'Le nom est obligatoire (100 caractères maximum).'],
             'birth_date' => [v::date('Y-m-d')->max(date('Y-m-d')), 'La date de naissance doit être une date valide et passée.'],
-            'picture' => [v::length(null, 255), 'Le nom de la photo ne doit pas dépasser 255 caractères.'],
         ];
 
         $this->errors = [];
         foreach ($rules as $field => [$rule, $message]) {
             if (!$rule->validate($data[$field])) {
                 $this->errors[$field] = $message;
+            }
+        }
+
+        // Photo : facultative, mais si un fichier est choisi il doit être une image valide
+        $picture = $files['picture'] ?? null;
+        if ($this->uploader->hasFile($picture)) {
+            $error = $this->uploader->validate($picture);
+            if ($error !== null) {
+                $this->errors['picture'] = $error;
             }
         }
 
@@ -58,10 +68,19 @@ class PlayerFormHandler
             return null;
         }
 
+        // Nom de la photo : la nouvelle si un fichier a été envoyé, sinon on garde l'actuelle
+        $pictureName = '';
+        if ($player !== null) {
+            $pictureName = $player->getPicture();
+        }
+        if ($this->uploader->hasFile($picture)) {
+            $pictureName = $this->uploader->save($picture);
+        }
+
         $birthDate = new DateTime($data['birth_date']);
 
         if ($player === null) {
-            $player = new Player(0, $data['first_name'], $data['last_name'], $birthDate, $data['picture']);
+            $player = new Player(0, $data['first_name'], $data['last_name'], $birthDate, $pictureName);
             $player->setId($this->repository->create($player));
 
             return $player;
@@ -71,7 +90,7 @@ class PlayerFormHandler
             ->setFirstName($data['first_name'])
             ->setLastName($data['last_name'])
             ->setBirthDate($birthDate)
-            ->setPicture($data['picture']);
+            ->setPicture($pictureName);
         $this->repository->update($player);
 
         return $player;

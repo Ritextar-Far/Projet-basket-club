@@ -1,1 +1,3 @@
 /vendor/
+/public/images/*
+!/public/images/.gitkeep

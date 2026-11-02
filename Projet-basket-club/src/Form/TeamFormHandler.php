@@ -6,38 +6,48 @@ namespace App\Form;
 
 use App\Model\Team;
 use App\Repositories\TeamRepository;
+use App\Service\ImageUploader;
 use Respect\Validation\Validator as v;
 
 class TeamFormHandler
 {
     private array $errors = [];
 
-    public function __construct(private TeamRepository $repository)
-    {
+    public function __construct(
+        private TeamRepository $repository,
+        private ImageUploader $uploader
+    ) {
     }
 
     /**
-     * Valide les données saisies puis crée ou met à jour l'équipe.
+     * Valide les données saisies (et le logo envoyé) puis crée ou met à jour l'équipe.
      * Retourne l'équipe enregistrée, ou null si les données sont invalides.
      */
-    public function handle(array $input): ?Team
+    public function handle(array $input, array $files): ?Team
     {
         $id = (int) ($input['id'] ?? 0);
         $data = [
             'name' => trim((string) ($input['name'] ?? '')),
-            'logo' => trim((string) ($input['logo'] ?? '')),
         ];
 
         // Pour chaque champ : la règle à respecter et le message si elle ne l'est pas
         $rules = [
             'name' => [v::notEmpty()->length(1, 150), 'Le nom de l\'équipe est obligatoire (150 caractères maximum).'],
-            'logo' => [v::length(null, 255), 'Le nom du logo ne doit pas dépasser 255 caractères.'],
         ];
 
         $this->errors = [];
         foreach ($rules as $field => [$rule, $message]) {
             if (!$rule->validate($data[$field])) {
                 $this->errors[$field] = $message;
+            }
+        }
+
+        // Logo : facultatif, mais si un fichier est choisi il doit être une image valide
+        $logo = $files['logo'] ?? null;
+        if ($this->uploader->hasFile($logo)) {
+            $error = $this->uploader->validate($logo);
+            if ($error !== null) {
+                $this->errors['logo'] = $error;
             }
         }
 
@@ -53,8 +63,17 @@ class TeamFormHandler
             return null;
         }
 
+        // Nom du logo : le nouveau si un fichier a été envoyé, sinon on garde l'actuel
+        $logoName = '';
+        if ($team !== null) {
+            $logoName = $team->getLogo();
+        }
+        if ($this->uploader->hasFile($logo)) {
+            $logoName = $this->uploader->save($logo);
+        }
+
         if ($team === null) {
-            $team = new Team(0, $data['name'], $data['logo']);
+            $team = new Team(0, $data['name'], $logoName);
             $team->setId($this->repository->create($team));
 
             return $team;
@@ -62,7 +81,7 @@ class TeamFormHandler
 
         $team
             ->setName($data['name'])
-            ->setLogo($data['logo']);
+            ->setLogo($logoName);
         $this->repository->update($team);
 
         return $team;

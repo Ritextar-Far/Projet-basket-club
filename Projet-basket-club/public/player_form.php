@@ -5,12 +5,14 @@ namespace Public;
 use App\Form\PlayerFormHandler;
 use App\Repositories\PlayerRepository;
 use App\Security\CsrfToken;
+use App\Service\ImageUploader;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../config/Connexion.php';
 
 $repository = new PlayerRepository($pdo);
-$handler = new PlayerFormHandler($repository);
+// Les photos envoyées sont enregistrées dans le dossier public/images
+$handler = new PlayerFormHandler($repository, new ImageUploader(__DIR__ . '/images'));
 $errors = [];
 
 // Édition : on récupère le joueur via le repository, qui renvoie un objet Player
@@ -30,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit('Formulaire invalide ou expiré, veuillez recharger la page.');
     }
 
-    $saved = $handler->handle($_POST);
+    $saved = $handler->handle($_POST, $_FILES);
 
     if ($saved !== null) {
         header('Location: index.php?saved=1');
@@ -45,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'first_name' => $player->getFirstName(),
         'last_name' => $player->getLastName(),
         'birth_date' => $player->getBirthDate()->format('Y-m-d'),
-        'picture' => $player->getPicture(),
     ];
 } else {
     // Ajout : formulaire vide
@@ -82,7 +83,8 @@ function e(?string $value): string
         <p class="error"><?= e($errors['id']) ?></p>
     <?php endif; ?>
 
-    <form method="post">
+    <!-- enctype="multipart/form-data" est obligatoire pour pouvoir envoyer un fichier -->
+    <form method="post" enctype="multipart/form-data">
         <input type="hidden" name="id" value="<?= $id ?>">
         <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">
 
@@ -114,9 +116,12 @@ function e(?string $value): string
         </p>
 
         <p>
-            <label for="picture">Photo (nom du fichier)</label><br>
-            <input type="text" id="picture" name="picture" maxlength="255"
-                   value="<?= e($values['picture'] ?? '') ?>">
+            <label for="picture">Photo (JPG, PNG, GIF ou WEBP, 2 Mo maximum)</label><br>
+            <?php if ($player !== null && $player->getPicture() !== ''): ?>
+                <img class="preview" src="images/<?= e($player->getPicture()) ?>" alt="Photo actuelle"><br>
+                <small>Laissez vide pour garder la photo actuelle.</small><br>
+            <?php endif; ?>
+            <input type="file" id="picture" name="picture" accept="image/jpeg,image/png,image/gif,image/webp">
             <?php if (isset($errors['picture'])): ?>
                 <br><span class="error"><?= e($errors['picture']) ?></span>
             <?php endif; ?>
