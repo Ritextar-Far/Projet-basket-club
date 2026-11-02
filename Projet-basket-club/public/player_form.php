@@ -29,6 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit('Formulaire invalide ou expiré, veuillez recharger la page.');
     }
 
+ dd($_POST);
+
     $saved = $handler->handle($_POST, $_FILES);
 
     if ($saved !== null) {
