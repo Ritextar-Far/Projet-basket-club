@@ -11,3 +11,4 @@ button.button { border: none; font-size: 1em; cursor: pointer; }
 .success { color: #080; }
 .button.back { background: #666; margin-top: 16px; }
 .preview { width: 100px; height: 100px; object-fit: cover; margin: 6px 0; }
+.button.delete { background: #c00; }

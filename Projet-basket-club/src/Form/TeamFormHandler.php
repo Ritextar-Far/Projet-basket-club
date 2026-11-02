@@ -19,10 +19,6 @@ class TeamFormHandler
     ) {
     }
 
-    /**
-     * Valide les données saisies (et le logo envoyé) puis crée ou met à jour l'équipe.
-     * Retourne l'équipe enregistrée, ou null si les données sont invalides.
-     */
     public function handle(array $input, array $files): ?Team
     {
         $id = (int) ($input['id'] ?? 0);
@@ -30,7 +26,6 @@ class TeamFormHandler
             'name' => trim((string) ($input['name'] ?? '')),
         ];
 
-        // Pour chaque champ : la règle à respecter et le message si elle ne l'est pas
         $rules = [
             'name' => [v::notEmpty()->length(1, 150), 'Le nom de l\'équipe est obligatoire (150 caractères maximum).'],
         ];
@@ -42,7 +37,6 @@ class TeamFormHandler
             }
         }
 
-        // Logo : facultatif, mais si un fichier est choisi il doit être une image valide
         $logo = $files['logo'] ?? null;
         if ($this->uploader->hasFile($logo)) {
             $error = $this->uploader->validate($logo);
@@ -63,7 +57,6 @@ class TeamFormHandler
             return null;
         }
 
-        // Nom du logo : le nouveau si un fichier a été envoyé, sinon on garde l'actuel
         $logoName = '';
         if ($team !== null) {
             $logoName = $team->getLogo();

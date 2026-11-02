@@ -26,9 +26,6 @@ class BasketballMatchRepository
         );
     }
 
-    /**
-     * Matchs déjà joués (date passée), du plus récent au plus ancien.
-     */
     public function findPlayed(): array
     {
         $statement = $this->pdo->prepare(

@@ -6,12 +6,8 @@ namespace App\Service;
 
 use Respect\Validation\Validator as v;
 
-/**
- * Vérifie et enregistre une image envoyée par un formulaire (<input type="file">).
- */
 class ImageUploader
 {
-    // Types d'images acceptés, avec l'extension à donner au fichier enregistré
     private const TYPES = [
         'image/jpeg' => 'jpg',
         'image/png' => 'png',
@@ -25,17 +21,11 @@ class ImageUploader
     {
     }
 
-    /**
-     * Indique si un fichier a été choisi dans le formulaire.
-     */
     public function hasFile(?array $file): bool
     {
         return $file !== null && $file['error'] !== UPLOAD_ERR_NO_FILE;
     }
 
-    /**
-     * Vérifie le fichier envoyé. Retourne un message d'erreur, ou null s'il est valide.
-     */
     public function validate(array $file): ?string
     {
         if ($file['error'] === UPLOAD_ERR_INI_SIZE || $file['error'] === UPLOAD_ERR_FORM_SIZE) {
@@ -50,7 +40,6 @@ class ImageUploader
             return 'L\'image ne doit pas dépasser 2 Mo.';
         }
 
-        // On lit le vrai type du fichier dans son contenu (on ne se fie ni au nom ni à l'extension)
         if (!v::in(array_keys(self::TYPES))->validate($this->getMimeType($file['tmp_name']))) {
             return 'Le fichier doit être une image JPG, PNG, GIF ou WEBP.';
         }
@@ -58,10 +47,6 @@ class ImageUploader
         return null;
     }
 
-    /**
-     * Enregistre le fichier dans le dossier des images sous un nom aléatoire
-     * et retourne ce nouveau nom (à enregistrer en base de données).
-     */
     public function save(array $file): string
     {
         $extension = self::TYPES[$this->getMimeType($file['tmp_name'])];

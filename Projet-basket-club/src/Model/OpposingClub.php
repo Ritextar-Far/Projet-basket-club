@@ -5,7 +5,7 @@ namespace App\Model;
 class OpposingClub
 {
     private int $id;
-    private string $name = ''; // Indiqué dans les spécifications fonctionnelles
+    private string $name = '';
     private string $address = '';
     private string $city = '';
 

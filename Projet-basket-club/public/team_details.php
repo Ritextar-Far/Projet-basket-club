@@ -18,7 +18,6 @@ $handler = new PlayerHasTeamFormHandler($repository, $playerRepository);
 $errors = [];
 $values = [];
 
-// L'équipe concernée, récupérée via le repository qui renvoie un objet Team
 $team = (new TeamRepository($pdo))->findById((int) ($_GET['id'] ?? 0));
 if ($team === null) {
     http_response_code(404);
@@ -28,20 +27,17 @@ if ($team === null) {
 $pageUrl = 'team_details.php?id=' . $team->getId();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Refuse l'envoi si le jeton du formulaire ne correspond pas à celui de la session
     if (!CsrfToken::isValid($_POST['csrf_token'] ?? null)) {
         http_response_code(403);
         exit('Formulaire invalide ou expiré, veuillez recharger la page.');
     }
 
-    // Bouton « Retirer » : on supprime le joueur de cette équipe
     if (($_POST['action'] ?? '') === 'remove') {
         $repository->delete((int) ($_POST['player_id'] ?? 0), $team->getId());
         header('Location: ' . $pageUrl . '&removed=1');
         exit;
     }
 
-    // Formulaire « Ajouter un joueur à l'équipe »
     if ($handler->handle($team, $_POST) !== null) {
         header('Location: ' . $pageUrl . '&saved=1');
         exit;
@@ -54,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $memberships = $repository->findByTeam($team->getId());
 $players = $playerRepository->findAll();
 
-// Jeton CSRF récupéré avant tout affichage (la session doit démarrer avant le HTML)
 $csrfToken = CsrfToken::get();
 
 function e(?string $value): string

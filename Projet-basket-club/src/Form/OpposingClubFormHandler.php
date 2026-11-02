@@ -16,10 +16,6 @@ class OpposingClubFormHandler
     {
     }
 
-    /**
-     * Valide les données saisies puis crée ou met à jour le club adverse.
-     * Retourne le club enregistré, ou null si les données sont invalides.
-     */
     public function handle(array $input): ?OpposingClub
     {
         $id = (int) ($input['id'] ?? 0);
@@ -29,7 +25,6 @@ class OpposingClubFormHandler
             'city' => trim((string) ($input['city'] ?? '')),
         ];
 
-        // Pour chaque champ : la règle à respecter et le message si elle ne l'est pas
         $rules = [
             'name' => [v::notEmpty()->length(1, 150), 'Le nom du club est obligatoire (150 caractères maximum).'],
             'address' => [v::notEmpty()->length(1, 255), 'L\'adresse est obligatoire (255 caractères maximum).'],

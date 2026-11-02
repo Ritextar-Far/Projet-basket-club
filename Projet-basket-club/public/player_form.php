@@ -11,11 +11,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../config/Connexion.php';
 
 $repository = new PlayerRepository($pdo);
-// Les photos envoyées sont enregistrées dans le dossier public/images
 $handler = new PlayerFormHandler($repository, new ImageUploader(__DIR__ . '/images'));
 $errors = [];
 
-// Édition : on récupère le joueur via le repository, qui renvoie un objet Player
 $player = null;
 if (isset($_GET['id'])) {
     $player = $repository->findById((int) $_GET['id']);
@@ -26,7 +24,6 @@ if (isset($_GET['id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Refuse l'envoi si le jeton du formulaire ne correspond pas à celui de la session
     if (!CsrfToken::isValid($_POST['csrf_token'] ?? null)) {
         http_response_code(403);
         exit('Formulaire invalide ou expiré, veuillez recharger la page.');
@@ -42,24 +39,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = $handler->getErrors();
     $values = $_POST;
 } elseif ($player !== null) {
-    // Édition : on pré-remplit le formulaire avec les valeurs du joueur
     $values = [
         'first_name' => $player->getFirstName(),
         'last_name' => $player->getLastName(),
         'birth_date' => $player->getBirthDate()->format('Y-m-d'),
     ];
 } else {
-    // Ajout : formulaire vide
     $values = [];
 }
 
-// Identifiant envoyé dans le champ caché : 0 pour un ajout, l'id du joueur pour une édition
 $id = 0;
 if ($player !== null) {
     $id = $player->getId();
 }
 
-// Jeton CSRF récupéré avant tout affichage (la session doit démarrer avant le HTML)
 $csrfToken = CsrfToken::get();
 
 function e(?string $value): string
@@ -83,7 +76,6 @@ function e(?string $value): string
         <p class="error"><?= e($errors['id']) ?></p>
     <?php endif; ?>
 
-    <!-- enctype="multipart/form-data" est obligatoire pour pouvoir envoyer un fichier -->
     <form method="post" enctype="multipart/form-data">
         <input type="hidden" name="id" value="<?= $id ?>">
         <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">

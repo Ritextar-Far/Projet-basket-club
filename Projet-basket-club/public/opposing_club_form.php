@@ -13,7 +13,6 @@ $repository = new OpposingClubRepository($pdo);
 $handler = new OpposingClubFormHandler($repository);
 $errors = [];
 
-// Édition : on récupère le club via le repository, qui renvoie un objet OpposingClub
 $club = null;
 if (isset($_GET['id'])) {
     $club = $repository->findById((int) $_GET['id']);
@@ -24,7 +23,6 @@ if (isset($_GET['id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Refuse l'envoi si le jeton du formulaire ne correspond pas à celui de la session
     if (!CsrfToken::isValid($_POST['csrf_token'] ?? null)) {
         http_response_code(403);
         exit('Formulaire invalide ou expiré, veuillez recharger la page.');
@@ -40,24 +38,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = $handler->getErrors();
     $values = $_POST;
 } elseif ($club !== null) {
-    // Édition : on pré-remplit le formulaire avec les valeurs du club
     $values = [
         'name' => $club->getName(),
         'address' => $club->getAddress(),
         'city' => $club->getCity(),
     ];
 } else {
-    // Ajout : formulaire vide
     $values = [];
 }
 
-// Identifiant envoyé dans le champ caché : 0 pour un ajout, l'id du club pour une édition
 $id = 0;
 if ($club !== null) {
     $id = $club->getId();
 }
 
-// Jeton CSRF récupéré avant tout affichage (la session doit démarrer avant le HTML)
 $csrfToken = CsrfToken::get();
 
 function e(?string $value): string

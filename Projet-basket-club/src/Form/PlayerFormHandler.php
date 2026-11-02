@@ -20,10 +20,6 @@ class PlayerFormHandler
     ) {
     }
 
-    /**
-     * Valide les données saisies (et la photo envoyée) puis crée ou met à jour le joueur.
-     * Retourne le joueur enregistré, ou null si les données sont invalides.
-     */
     public function handle(array $input, array $files): ?Player
     {
         $id = (int) ($input['id'] ?? 0);
@@ -33,7 +29,6 @@ class PlayerFormHandler
             'birth_date' => trim((string) ($input['birth_date'] ?? '')),
         ];
 
-        // Pour chaque champ : la règle à respecter et le message si elle ne l'est pas
         $rules = [
             'first_name' => [v::notEmpty()->length(1, 100), 'Le prénom est obligatoire (100 caractères maximum).'],
             'last_name' => [v::notEmpty()->length(1, 100), 'Le nom est obligatoire (100 caractères maximum).'],
@@ -47,7 +42,6 @@ class PlayerFormHandler
             }
         }
 
-        // Photo : facultative, mais si un fichier est choisi il doit être une image valide
         $picture = $files['picture'] ?? null;
         if ($this->uploader->hasFile($picture)) {
             $error = $this->uploader->validate($picture);
@@ -68,7 +62,6 @@ class PlayerFormHandler
             return null;
         }
 
-        // Nom de la photo : la nouvelle si un fichier a été envoyé, sinon on garde l'actuelle
         $pictureName = '';
         if ($player !== null) {
             $pictureName = $player->getPicture();

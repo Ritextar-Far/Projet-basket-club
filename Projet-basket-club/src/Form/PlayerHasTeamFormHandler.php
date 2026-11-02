@@ -21,22 +21,15 @@ class PlayerHasTeamFormHandler
     ) {
     }
 
-    /**
-     * Ajoute le joueur choisi à l'équipe, avec le rôle choisi.
-     * S'il est déjà dans cette équipe, son rôle est mis à jour.
-     * Retourne l'inscription enregistrée, ou null si les données sont invalides.
-     */
     public function handle(Team $team, array $input): ?PlayerHasTeam
     {
         $this->errors = [];
 
-        // Le joueur choisi doit exister en base
         $player = $this->playerRepository->findById((int) ($input['player_id'] ?? 0));
         if ($player === null) {
             $this->errors['player_id'] = 'Veuillez choisir un joueur.';
         }
 
-        // Le rôle doit faire partie des valeurs de l'énumération PlayerRole
         $roles = array_map(fn (PlayerRole $role): string => $role->value, PlayerRole::cases());
         $roleValue = (string) ($input['role'] ?? '');
         if (!v::in($roles)->validate($roleValue)) {

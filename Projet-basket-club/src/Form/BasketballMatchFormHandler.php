@@ -22,10 +22,6 @@ class BasketballMatchFormHandler
     ) {
     }
 
-    /**
-     * Valide les données saisies puis crée ou met à jour le match.
-     * Retourne le match enregistré, ou null si les données sont invalides.
-     */
     public function handle(array $input): ?BasketballMatch
     {
         $id = (int) ($input['id'] ?? 0);
@@ -36,8 +32,6 @@ class BasketballMatchFormHandler
             'city' => trim((string) ($input['city'] ?? '')),
         ];
 
-        // Pour chaque champ : la règle à respecter et le message si elle ne l'est pas
-        // (format de la date envoyée par un champ <input type="datetime-local"> : 2026-11-15T20:30)
         $rules = [
             'team_score' => [v::intVal()->between(0, 300), 'Le score de l\'équipe doit être un nombre entre 0 et 300.'],
             'opponent_score' => [v::intVal()->between(0, 300), 'Le score de l\'adversaire doit être un nombre entre 0 et 300.'],
@@ -52,7 +46,6 @@ class BasketballMatchFormHandler
             }
         }
 
-        // L'équipe et le club choisis doivent exister en base
         $team = $this->teamRepository->findById((int) ($input['team_id'] ?? 0));
         if ($team === null) {
             $this->errors['team_id'] = 'Veuillez choisir une équipe du club.';

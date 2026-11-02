@@ -17,11 +17,9 @@ $opposingClubRepository = new OpposingClubRepository($pdo);
 $handler = new BasketballMatchFormHandler($repository, $teamRepository, $opposingClubRepository);
 $errors = [];
 
-// Listes des équipes et clubs adverses pour les menus déroulants
 $teams = $teamRepository->findAll();
 $opposingClubs = $opposingClubRepository->findAll();
 
-// Édition : on récupère le match via le repository, qui renvoie un objet BasketballMatch
 $match = null;
 if (isset($_GET['id'])) {
     $match = $repository->findById((int) $_GET['id']);
@@ -32,7 +30,6 @@ if (isset($_GET['id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Refuse l'envoi si le jeton du formulaire ne correspond pas à celui de la session
     if (!CsrfToken::isValid($_POST['csrf_token'] ?? null)) {
         http_response_code(403);
         exit('Formulaire invalide ou expiré, veuillez recharger la page.');
@@ -48,7 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = $handler->getErrors();
     $values = $_POST;
 } elseif ($match !== null) {
-    // Édition : on pré-remplit le formulaire avec les valeurs du match
     $values = [
         'team_id' => $match->getTeam()->getId(),
         'opposing_club_id' => $match->getOpposingClub()->getId(),
@@ -58,17 +54,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'city' => $match->getCity(),
     ];
 } else {
-    // Ajout : formulaire vide
     $values = [];
 }
 
-// Identifiant envoyé dans le champ caché : 0 pour un ajout, l'id du match pour une édition
 $id = 0;
 if ($match !== null) {
     $id = $match->getId();
 }
 
-// Jeton CSRF récupéré avant tout affichage (la session doit démarrer avant le HTML)
 $csrfToken = CsrfToken::get();
 
 function e(?string $value): string

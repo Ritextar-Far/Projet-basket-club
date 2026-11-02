@@ -27,9 +27,6 @@ class PlayerHasTeamRepository
         );
     }
 
-    /**
-     * Composition d'une équipe : tous ses joueurs, avec le rôle de chacun.
-     */
     public function findByTeam(int $teamId): array
     {
         $statement = $this->pdo->prepare(
